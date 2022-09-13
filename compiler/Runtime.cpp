@@ -153,6 +153,7 @@ Runtime::Runtime(Module &M) {
                         IRB.getInt64Ty(), int8T);
 
   notifyCall = import(M, "_sym_notify_call", voidT, intPtrType);
+  notifyCallFn = import(M, "_sym_notify_call_fn", voidT, ptrT, IRB.getInt64Ty());
   notifyRet = import(M, "_sym_notify_ret", voidT, intPtrType);
   notifyBasicBlock = import(M, "_sym_notify_basic_block", voidT, intPtrType);
 }

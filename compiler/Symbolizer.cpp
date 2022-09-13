@@ -312,6 +312,8 @@ void Symbolizer::handleFunctionCall(CallBase &I, Instruction *returnPoint) {
   IRB.CreateCall(runtime.notifyRet, getTargetPreferredInt(&I));
   IRB.SetInsertPoint(&I);
   IRB.CreateCall(runtime.notifyCall, getTargetPreferredInt(&I));
+  auto fn_name = I.getCalledFunction().getName();
+  IRB.CreateCall(runtime.notifyCallFn, IRB.CreateGlobalStringPtr(fn_name.data()), fn_name.size());
 
   if (callee == nullptr)
     tryAlternative(IRB, I.getCalledOperand());

@@ -490,6 +490,7 @@ size_t _sym_bits_helper(SymExpr expr) {
 
 /* No call-stack tracing */
 void _sym_notify_call(uintptr_t) {}
+void _sym_notify_call_fn(char* function_name, uint64_t length) {}
 void _sym_notify_ret(uintptr_t) {}
 void _sym_notify_basic_block(uintptr_t) {}
 

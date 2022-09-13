@@ -281,12 +281,15 @@ SymExpr _sym_build_trunc(SymExpr expr, uint8_t bits) {
       g_expr_builder->createTrunc(allocatedExpressions.at(expr), bits));
 }
 
+const char* FTS = getenv("FUNC_TO_SOLVE");
+
 void _sym_push_path_constraint(SymExpr constraint, int taken,
                                uintptr_t site_id) {
   if (constraint == nullptr)
     return;
 
-  g_solver->addJcc(allocatedExpressions.at(constraint), taken != 0, site_id);
+  if (strcmp(currentFunc, FTS) == 0 || isInterceptedFunction(currentFunc))
+    g_solver->addJcc(allocatedExpressions.at(constraint), taken != 0, site_id);
 }
 
 SymExpr _sym_get_input_byte(size_t offset) {
@@ -356,7 +359,19 @@ void _sym_notify_call(uintptr_t site_id) {
   g_call_stack_manager.visitCall(site_id);
 }
 
+char* callstack[4096] = {nullptr};
+size_t callstack_idx = 0;
+
+std::string currentFunc = "";
+
+void _sym_notify_call_fn(char* function_name, uint64_t length) {
+  callstack[callstack_idx++] = function_name;
+  currentFunc = std::string(function_name);
+}
+
 void _sym_notify_ret(uintptr_t site_id) {
+  callstack_idx--;
+  currentFunc = std::string(callstack[callstack_idx]);
   g_call_stack_manager.visitRet(site_id);
 }
 
